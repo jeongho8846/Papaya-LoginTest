@@ -5,7 +5,10 @@
     "outDir": "dist",
     "strict": false,
     "moduleDetection": "force",
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true
   },
   "ts-node": {"esm": true},
   "include": ["src"]
