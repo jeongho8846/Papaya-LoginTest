@@ -1,4 +1,10 @@
 import {
+  NavigationContainer,
+  createNavigationContainerRef,
+  useNavigationContainerRef,
+} from '@react-navigation/native';
+
+import {
   View,
   Text,
   TextInput,
@@ -6,10 +12,10 @@ import {
   Alert,
   StyleSheet,
 } from 'react-native';
-import React, {useCallback, useRef, useState} from 'react';
-import axios, {AxiosError} from 'axios';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import axios from 'axios';
 
-function App() {
+function SignIn() {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const emailRef = useRef<TextInput | null>(null);
@@ -22,28 +28,37 @@ function App() {
     setPassword(text);
   }, []);
 
-  const onSubmit = useCallback(async () => {
-    Alert.alert('알림', '로그인 눌렀음');
-  }, [email, password]);
-
   console.log(email, password);
-  try {
-    const respone = axios.post('http://52.87.124.70:8080/members/new', {
-      name: email,
-      password: password,
-    });
-  } catch (error) {
-    const errorRespne = (error as AxiosError).response;
-    console.error();
-  } finally {
-  }
+  // const onSubmit = useCallback(() => {
+  //   Alert.alert('알림', '로그인 눌렀음');
+  // }, [email, password]);
+
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post(
+        'http://52.87.124.70:8080/members/login',
+        {
+          name: email,
+          password: password,
+        },
+      );
+      // 서버에서 반환된 응답을 처리
+      console.log(response.data);
+      Alert.alert('로그인 성공');
+    } catch (error) {
+      // 에러 처리
+      console.error(error);
+      console.log(email, password);
+      Alert.alert('로그인 실패', '이메일 또는 비밀번호를 확인해주세요.');
+    }
+  };
 
   return (
     <View style={styles.page}>
       <View>
-        <Text>이메일</Text>
+        <Text>로그인</Text>
         <TextInput
-          placeholder="이메일을 입력 해주세요"
+          placeholder="아이디를 입력 해주세요"
           value={email}
           onChangeText={onChangeEmail}
           importantForAccessibility="yes"
@@ -68,19 +83,22 @@ function App() {
           textContentType="password"
           secureTextEntry
           ref={passwordRef}
-          onSubmitEditing={onSubmit}
+          onSubmitEditing={handleLogin}
           style={styles.inputBox}></TextInput>
       </View>
       <View>
         <Pressable
-          onPress={onSubmit}
+          onPress={handleLogin}
           style={
             !email || !password
               ? styles.loginButton
               : [styles.loginButton, styles.loginButtonActive]
           }
           disabled={!email || !password}>
-          <Text style={styles.loginButtonText}>회원가입</Text>
+          <Text style={styles.loginButtonText}>로그인</Text>
+        </Pressable>
+        <Pressable>
+          <Text style={styles.signUpButton}>회원가입</Text>
         </Pressable>
       </View>
     </View>
@@ -116,4 +134,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+export default SignIn;
