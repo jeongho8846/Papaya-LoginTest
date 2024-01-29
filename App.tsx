@@ -11,6 +11,7 @@ import {
   Pressable,
   Alert,
   StyleSheet,
+  Image,
 } from 'react-native';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import axios from 'axios';
@@ -20,6 +21,9 @@ function SignIn() {
   const [password, setPassword] = useState();
   const emailRef = useRef<TextInput | null>(null);
   const passwordRef = useRef<TextInput | null>(null);
+  const [userId, setUserId] = useState('');
+  const [userName, setUserName] = useState('');
+  const [userImage, setUserImage] = useState('');
 
   const onChangeEmail = useCallback(text => {
     setEmail(text);
@@ -42,9 +46,15 @@ function SignIn() {
           password: password,
         },
       );
+
       // 서버에서 반환된 응답을 처리
-      console.log(response.data);
+      console.log('로그인 성공!', response.data);
       Alert.alert('로그인 성공');
+
+      setUserId(response.data.id);
+      setUserName(response.data.name);
+      setUserImage(response.data.image.location);
+      console.log(response.data.image.location);
     } catch (error) {
       // 에러 처리
       console.error(error);
@@ -101,6 +111,13 @@ function SignIn() {
           <Text style={styles.signUpButton}>회원가입</Text>
         </Pressable>
       </View>
+      <View>
+        <Text>{userId}</Text>
+        <Text>{userName}</Text>
+      </View>
+      <View>
+        <Image source={{uri: userImage}} style={styles.userImage} />
+      </View>
     </View>
   );
 }
@@ -131,6 +148,11 @@ const styles = StyleSheet.create({
   },
   page: {
     alignItems: 'center',
+  },
+  userImage: {
+    width: 400,
+    height: 400,
+    resizeMode: 'cover',
   },
 });
 
